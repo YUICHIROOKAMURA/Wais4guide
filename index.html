@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAIS-4解釈ガイド｜認知機能を可視化する地図</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.8;
+            color: #2C3E50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        /* ヘッダー */
+        header {
+            background: linear-gradient(135deg, #4A5FBA 0%, #667eea 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* メインコンテンツ */
+        main {
+            padding: 60px 40px;
+        }
+
+        section {
+            margin-bottom: 80px;
+        }
+
+        h2 {
+            font-size: 2em;
+            color: #4A5FBA;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #FF8C42;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h2 i {
+            color: #FF8C42;
+        }
+
+        h3 {
+            font-size: 1.5em;
+            color: #2C3E50;
+            margin: 30px 0 20px 0;
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.05em;
+        }
+
+        /* イントロボックス */
+        .intro-box {
+            background: linear-gradient(135deg, #F5F7FA 0%, #E8EEF7 100%);
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            border-left: 5px solid #4A5FBA;
+        }
+
+        .intro-box h3 {
+            margin-top: 0;
+            color: #4A5FBA;
+        }
+
+        /* 4指標グリッド */
+        .indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .indicator-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 4px solid;
+        }
+
+        .indicator-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .indicator-card.vci { border-top-color: #4A90E2; }
+        .indicator-card.pri { border-top-color: #7ED321; }
+        .indicator-card.wmi { border-top-color: #9B59B6; }
+        .indicator-card.psi { border-top-color: #F5A623; }
+
+        .indicator-card i {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .indicator-card.vci i { color: #4A90E2; }
+        .indicator-card.pri i { color: #7ED321; }
+        .indicator-card.wmi i { color: #9B59B6; }
+        .indicator-card.psi i { color: #F5A623; }
+
+        .indicator-card h4 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #2C3E50;
+        }
+
+        .indicator-card p {
+            font-size: 0.95em;
+            color: #7F8C8D;
+            margin-bottom: 0;
+        }
+
+        /* アコーディオン */
+        .accordion {
+            margin: 30px 0;
+        }
+
+        .accordion-item {
+            background: white;
+            border: 2px solid #E8EEF7;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .accordion-item:hover {
+            border-color: #4A5FBA;
+        }
+
+        .accordion-header {
+            background: linear-gradient(135deg, #F5F7FA 0%, #E8EEF7 100%);
+            padding: 25px 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .accordion-header:hover {
+            background: linear-gradient(135deg, #E8EEF7 0%, #D5DDF5 100%);
+        }
+
+        .accordion-header h4 {
+            font-size: 1.3em;
+            color: #2C3E50;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .accordion-header i.fa-chevron-down {
+            color: #4A5FBA;
+            transition: transform 0.3s;
+        }
+
+        .accordion-item.active .accordion-header i.fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 2000px;
+        }
+
+        .accordion-body {
+            padding: 30px;
+            background: white;
+        }
+
+        /* 特徴リスト */
+        .feature-list {
+            background: #F5F7FA;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .feature-list h5 {
+            color: #4A5FBA;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .feature-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #7ED321;
+        }
+
+        /* パターンカード */
+        .pattern-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .pattern-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-left: 5px solid;
+            transition: transform 0.3s;
+        }
+
+        .pattern-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .pattern-card.type1 { border-left-color: #4A90E2; }
+        .pattern-card.type2 { border-left-color: #7ED321; }
+        .pattern-card.type3 { border-left-color: #9B59B6; }
+        .pattern-card.type4 { border-left-color: #F5A623; }
+
+        .pattern-card h4 {
+            color: #2C3E50;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .pattern-scores {
+            font-family: 'Courier New', monospace;
+            background: #F5F7FA;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.9em;
+        }
+
+        .pattern-card p {
+            font-size: 0.95em;
+            color: #555;
+        }
+
+        /* 警告ボックス */
+        .warning-box {
+            background: #FFF3E0;
+            border-left: 5px solid #FF8C42;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+        .warning-box h4 {
+            color: #E67E22;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .warning-box i {
+            color: #FF8C42;
+        }
+
+        /* 比較表 */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #4A5FBA 0%, #667eea 100%);
+            color: white;
+            padding: 20px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 20px;
+            border-bottom: 1px solid #E8EEF7;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #F5F7FA;
+        }
+
+        /* チェックリスト */
+        .checklist {
+            background: #E8F5E9;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .checklist h4 {
+            color: #2E7D32;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checklist ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            padding: 12px 0;
+            padding-left: 35px;
+            position: relative;
+            font-size: 1.05em;
+        }
+
+        .checklist li:before {
+            content: "\f046";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 400;
+            position: absolute;
+            left: 0;
+            color: #4CAF50;
+            font-size: 1.2em;
+        }
+
+        /* 情報ソース */
+        .sources {
+            background: linear-gradient(135deg, #F5F7FA 0%, #E8EEF7 100%);
+            padding: 40px;
+            border-radius: 15px;
+            margin-top: 60px;
+        }
+
+        .sources h3 {
+            color: #4A5FBA;
+            margin-bottom: 25px;
+        }
+
+        .sources ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sources li {
+            padding: 15px 0;
+            border-bottom: 1px solid #D5DDF5;
+        }
+
+        .sources li:last-child {
+            border-bottom: none;
+        }
+
+        .sources a {
+            color: #4A5FBA;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: color 0.3s;
+        }
+
+        .sources a:hover {
+            color: #FF8C42;
+        }
+
+        .sources i {
+            color: #FF8C42;
+        }
+
+        /* フッター */
+        footer {
+            background: #2C3E50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            font-size: 0.9em;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            header {
+                padding: 40px 20px;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            main {
+                padding: 40px 20px;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .indicators-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pattern-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* アニメーション */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        section {
+            animation: fadeInUp 0.6s ease;
+        }
+
+        /* ハイライト */
+        .highlight {
+            background: linear-gradient(transparent 60%, #FFE082 60%);
+            font-weight: 600;
+        }
+
+        /* キーポイント */
+        .key-point {
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border-left: 5px solid #2196F3;
+        }
+
+        .key-point h4 {
+            color: #1976D2;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .key-point i {
+            color: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-brain"></i> WAIS-4解釈ガイド</h1>
+            <p>認知機能を可視化する地図 〜支援に活かすための実践的理解〜</p>
+        </header>
+
+        <main>
+            <!-- セクション1: イントロダクション -->
+            <section id="intro">
+                <h2><i class="fas fa-compass"></i> なぜWAIS-4が必要なのか</h2>
+                
+                <div class="intro-box">
+                    <h3>見えない「認知の特性」を可視化する</h3>
+                    <p>「仕事の指示を理解できない」「ケアレスミスが多い」「作業が遅い」──こうした職場での困りごとは、本人の努力不足ではなく、<span class="highlight">認知機能の特性</span>が関係していることがあります。</p>
+                    <p>WAIS-4（ウェクスラー成人知能検査）は、目に見えない「考え方のクセ」や「情報処理の特徴」を、<span class="highlight">4つの窓から客観的に測定</span>するツールです。</p>
+                </div>
+
+                <div class="key-point">
+                    <h4><i class="fas fa-lightbulb"></i> WAIS-4の本質</h4>
+                    <p>WAIS-4は「頭の良し悪し」を測るものではありません。<strong>どのように情報を受け取り、処理し、表現するかという「認知の特性」を理解するための地図</strong>です。この地図があれば、その人に合った支援方法や職場環境を具体的に設計できます。</p>
+                </div>
+
+                <p><strong>例えば...</strong></p>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li style="padding: 10px 0; border-left: 3px solid #4A90E2; padding-left: 15px; margin-bottom: 10px;">
+                        <i class="fas fa-user" style="color: #4A90E2;"></i> Aさん「口頭で複数の指示を出されると混乱する」<br>
+                        <small style="color: #7F8C8D;">→ ワーキングメモリー（作業記憶）に特性があるかもしれない</small>
+                    </li>
+                    <li style="padding: 10px 0; border-left: 3px solid #7ED321; padding-left: 15px; margin-bottom: 10px;">
+                        <i class="fas fa-user" style="color: #7ED321;"></i> Bさん「文章マニュアルより図解の方が理解しやすい」<br>
+                        <small style="color: #7F8C8D;">→ 言語理解より視覚的推理が得意かもしれない</small>
+                    </li>
+                    <li style="padding: 10px 0; border-left: 3px solid #F5A623; padding-left: 15px;">
+                        <i class="fas fa-user" style="color: #F5A623;"></i> Cさん「正確にできるけど時間がかかる」<br>
+                        <small style="color: #7F8C8D;">→ 処理速度に特性があるが質は高いかもしれない</small>
+                    </li>
+                </ul>
+
+                <p>WAIS-4を理解することで、<strong>「できない」を「どう支援すればできるか」</strong>に変換できます。</p>
+            </section>
+
+            <!-- セクション2: 4つの窓 -->
+            <section id="four-windows">
+                <h2><i class="fas fa-th"></i> 認知機能を見る「4つの窓」</h2>
+                
+                <p>WAIS-4は、認知機能を<strong>4つの異なる角度から</strong>測定します。それぞれが独立した能力であり、人によって得意・不得意が異なります。</p>
+
+                <div class="indicators-grid">
+                    <div class="indicator-card vci">
+                        <i class="fas fa-comment-dots"></i>
+                        <h4>言語理解<br><small>(VCI)</small></h4>
+                        <p>言葉で考え、<br>説明する力</p>
+                    </div>
+                    <div class="indicator-card pri">
+                        <i class="fas fa-shapes"></i>
+                        <h4>知覚推理<br><small>(PRI)</small></h4>
+                        <p>図形や空間で<br>考える力</p>
+                    </div>
+                    <div class="indicator-card wmi">
+                        <i class="fas fa-memory"></i>
+                        <h4>ワーキングメモリー<br><small>(WMI)</small></h4>
+                        <p>覚えながら<br>操作する力</p>
+                    </div>
+                    <div class="indicator-card psi">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <h4>処理速度<br><small>(PSI)</small></h4>
+                        <p>素早く正確に<br>処理する力</p>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <h4><i class="fas fa-star"></i> 重要な視点</h4>
+                    <p>「賢さ」は一つではありません。言葉が得意でも図形が苦手、記憶は得意でも速度が遅い──このような<strong>個人内のバラつき（プロフィール）</strong>こそが、その人の認知特性を表しています。</p>
+                </div>
+            </section>
+
+            <!-- セクション3: 各指標の詳細 -->
+            <section id="details">
+                <h2><i class="fas fa-search-plus"></i> 各指標を深く理解する</h2>
+                
+                <p>4つの指標それぞれが、何を測定し、どのような場面に影響するのかを詳しく見ていきましょう。</p>
+
+                <div class="accordion">
+                    <!-- VCI -->
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <h4><i class="fas fa-comment-dots" style="color: #4A90E2;"></i> 言語理解指標（VCI）</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <h5><i class="fas fa-bullseye"></i> 何を測るのか</h5>
+                                <p><strong>言葉を使って考え、理解し、表現する能力</strong>です。語彙の豊富さ、概念を理解する力、言語的推論能力を測定します。</p>
+
+                                <h5><i class="fas fa-tasks"></i> どんな課題で測るのか</h5>
+                                <ul style="padding-left: 20px; margin: 15px 0;">
+                                    <li>「単語」：言葉の意味を説明する</li>
+                                    <li>「類似」：2つの言葉の共通点を見つける（例：リンゴとバナナ）</li>
+                                    <li>「知識」：一般的な知識を問う（例：1年は何日？）</li>
+                                </ul>
+
+                                <div class="feature-list">
+                                    <h5>VCIが高い人の特徴</h5>
+                                    <ul>
+                                        <li>文章や口頭での説明が得意</li>
+                                        <li>マニュアルや文書の理解が早い</li>
+                                        <li>言葉を使った学習が効果的</li>
+                                        <li>抽象的な概念の理解が良好</li>
+                                    </ul>
+                                </div>
+
+                                <div class="feature-list">
+                                    <h5>VCIが低い場合の配慮</h5>
+                                    <ul>
+                                        <li>口頭指示だけでなく、図や実演を併用</li>
+                                        <li>専門用語は平易な言葉で補足</li>
+                                        <li>理解に時間をかけることを許容</li>
+                                        <li>視覚的な資料（図解、動画）が効果的</li>
+                                    </ul>
+                                </div>
+
+                                <div class="warning-box">
+                                    <h4><i class="fas fa-exclamation-triangle"></i> 注意点</h4>
+                                    <p>VCIは<strong>教育経験や文化的背景</strong>の影響を受けやすい指標です。低い数値が必ずしも能力の低さを意味するわけではなく、学習機会の差を反映している場合もあります。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PRI -->
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <h4><i class="fas fa-shapes" style="color: #7ED321;"></i> 知覚推理指標（PRI）</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <h5><i class="fas fa-bullseye"></i> 何を測るのか</h5>
+                                <p><strong>言葉を使わずに、視覚的・空間的に考える能力</strong>です。図形のパターン認識、全体と部分の関係理解、視覚的推論を測定します。</p>
+
+                                <h5><i class="fas fa-tasks"></i> どんな課題で測るのか</h5>
+                                <ul style="padding-left: 20px; margin: 15px 0;">
+                                    <li>「積木模様」：積木を組み合わせて図形を作る</li>
+                                    <li>「行列推理」：図形のパターンから次を推測</li>
+                                    <li>「パズル」：バラバラのピースから全体像を構成</li>
+                                </ul>
+
+                                <div class="feature-list">
+                                    <h5>PRIが高い人の特徴</h5>
+                                    <ul>
+                                        <li>図や絵での理解が得意</li>
+                                        <li>空間的な作業（レイアウト、組立）に強み</li>
+                                        <li>全体を見て構造を把握する力</li>
+                                        <li>視覚的なデザインやパターン認識が得意</li>
+                                    </ul>
+                                </div>
+
+                                <div class="feature-list">
+                                    <h5>PRIが低い場合の配慮</h5>
+                                    <ul>
+                                        <li>視覚情報は整理してシンプルに提示</li>
+                                        <li>図面や地図は言語化して補足説明</li>
+                                        <li>手順を言葉で明確に説明</li>
+                                        <li>複雑な視覚情報は段階的に提示</li>
+                                    </ul>
+                                </div>
+
+                                <p><strong>職場での活かし方：</strong>PRIが高い人は、製造・組立作業、デザイン関連、建築・設計、データの視覚化などの業務に適性があります。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WMI -->
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <h4><i class="fas fa-memory" style="color: #9B59B6;"></i> ワーキングメモリー指標（WMI）</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <h5><i class="fas fa-bullseye"></i> 何を測るのか</h5>
+                                <p><strong>情報を一時的に記憶しながら、同時に操作する能力</strong>です。「覚えておく」だけでなく、「覚えながら何かをする」力を測定します。</p>
+
+                                <div class="key-point">
+                                    <h4><i class="fas fa-star"></i> 最も日常生活に直結する能力</h4>
+                                    <p>WMIは、電話番号を覚えながらメモを取る、口頭指示を聞きながら作業する、会話しながら次の行動を考えるなど、<strong>日常的な場面で最も頻繁に使う能力</strong>です。</p>
+                                </div>
+
+                                <h5><i class="fas fa-tasks"></i> どんな課題で測るのか</h5>
+                                <ul style="padding-left: 20px; margin: 15px 0;">
+                                    <li>「数唱」：数字を覚えて順番通り/逆順で言う</li>
+                                    <li>「算数」：暗算で計算する（紙とペンなし）</li>
+                                    <li>「語音整列」：複数の情報を頭の中で整理する</li>
+                                </ul>
+
+                                <div class="feature-list">
+                                    <h5>WMIが高い人の特徴</h5>
+                                    <ul>
+                                        <li>複数の指示を同時に覚えられる</li>
+                                        <li>暗算や計算が得意</li>
+                                        <li>マルチタスクに対応しやすい</li>
+                                        <li>会話中に次の内容を準備できる</li>
+                                    </ul>
+                                </div>
+
+                                <div class="feature-list">
+                                    <h5>WMIが低い場合の配慮（重要！）</h5>
+                                    <ul>
+                                        <li><strong>指示は一つずつ、簡潔に</strong></li>
+                                        <li>メモやチェックリストの活用を推奨</li>
+                                        <li>複雑な指示は文書化して提供</li>
+                                        <li>マルチタスクを避け、単一タスクに集中</li>
+                                        <li>リマインダーやアラーム機能の活用</li>
+                                    </ul>
+                                </div>
+
+                                <div class="warning-box">
+                                    <h4><i class="fas fa-exclamation-triangle"></i> 就労支援で最重要</h4>
+                                    <p>WMIの低さは「頭が悪い」のではなく、<strong>情報を保持する「容量」が小さい</strong>だけです。メモや外部ツールで補えば、他の能力（理解力や正確性）は十分に発揮できます。環境調整が最も効果的な指標です。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PSI -->
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <h4><i class="fas fa-tachometer-alt" style="color: #F5A623;"></i> 処理速度指標（PSI）</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <h5><i class="fas fa-bullseye"></i> 何を測るのか</h5>
+                                <p><strong>視覚的な情報を素早く正確に処理する能力</strong>です。スピードだけでなく、集中力の持続や正確性も含まれます。</p>
+
+                                <h5><i class="fas fa-tasks"></i> どんな課題で測るのか</h5>
+                                <ul style="padding-left: 20px; margin: 15px 0;">
+                                    <li>「符号」：数字に対応する記号を素早く書く</li>
+                                    <li>「記号探し」：目標の記号があるかを素早く判断</li>
+                                    <li>「絵の抹消」：特定の絵を素早く見つける</li>
+                                </ul>
+
+                                <div class="feature-list">
+                                    <h5>PSIが高い人の特徴</h5>
+                                    <ul>
+                                        <li>テキパキと作業できる</li>
+                                        <li>単純作業の処理が速い</li>
+                                        <li>時間制限のある作業に強い</li>
+                                        <li>ミスが少なく効率的</li>
+                                    </ul>
+                                </div>
+
+                                <div class="feature-list">
+                                    <h5>PSIが低い場合の配慮</h5>
+                                    <ul>
+                                        <li>作業ペースがゆっくりでも評価</li>
+                                        <li>時間的余裕を持った計画</li>
+                                        <li>「遅い ≠ できない」の理解促進</li>
+                                        <li>質を重視する業務に配置</li>
+                                        <li>時間プレッシャーを軽減</li>
+                                    </ul>
+                                </div>
+
+                                <div class="key-point">
+                                    <h4><i class="fas fa-lightbulb"></i> 重要な視点</h4>
+                                    <p>PSIが低い人は、<strong>時間をかければ正確に仕事ができる</strong>ことが多いです。「遅い」ことが問題ではなく、時間制約のある環境が不適合なだけです。スピードより質を求められる業務では大きな強みになります。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- セクション4: プロフィール分析 -->
+            <section id="profile">
+                <h2><i class="fas fa-chart-line"></i> プロフィールから見えること</h2>
+                
+                <p>4つの指標の<strong>バランス（プロフィール）</strong>を見ることで、その人の認知特性がより明確になります。</p>
+
+                <div class="intro-box">
+                    <h3>指標間の差（ディスクレパンシー）の意味</h3>
+                    <p>指標の間に<strong>15点以上の差</strong>がある場合、臨床的に意味のある差と考えられます。この差が、その人の「得意」と「苦手」を示しています。</p>
+                </div>
+
+                <h3>典型的なプロフィールパターン</h3>
+                
+                <div class="pattern-cards">
+                    <div class="pattern-card type1">
+                        <h4>🔹 言語優位型</h4>
+                        <div class="pattern-scores">
+VCI: 115（高い）<br>
+PRI: 95（平均）<br>
+WMI: 105（平均）<br>
+PSI: 100（平均）
+                        </div>
+                        <p><strong>特徴：</strong>言葉での理解・説明が得意。文字情報を好む。</p>
+                        <p><strong>向いている業務：</strong>文書作成、電話対応、教育・研修など</p>
+                        <p><strong>配慮：</strong>視覚資料より言語的説明が効果的</p>
+                    </div>
+
+                    <div class="pattern-card type2">
+                        <h4>🔹 視覚優位型</h4>
+                        <div class="pattern-scores">
+VCI: 90（平均やや下）<br>
+PRI: 110（高い）<br>
+WMI: 95（平均）<br>
+PSI: 100（平均）
+                        </div>
+                        <p><strong>特徴：</strong>図や絵での理解が得意。空間認識に強み。</p>
+                        <p><strong>向いている業務：</strong>製造、デザイン、組立作業など</p>
+                        <p><strong>配慮：</strong>マニュアルは図解中心が効果的</p>
+                    </div>
+
+                    <div class="pattern-card type3">
+                        <h4>🔹 実行機能の弱さ型</h4>
+                        <div class="pattern-scores">
+VCI: 105（平均やや上）<br>
+PRI: 108（平均やや上）<br>
+WMI: 85（平均やや下）<br>
+PSI: 80（平均やや下）
+                        </div>
+                        <p><strong>特徴：</strong>理解力はあるが実行面で困難。「分かるけどできない」パターン。</p>
+                        <p><strong>向いている業務：</strong>ルーティン業務、単一タスク中心</p>
+                        <p><strong>配慮：</strong>メモ、リマインダー、チェックリスト必須。<strong>最も職場配慮が重要</strong></p>
+                    </div>
+
+                    <div class="pattern-card type4">
+                        <h4>🔹 バランス型</h4>
+                        <div class="pattern-scores">
+VCI: 100（平均）<br>
+PRI: 98（平均）<br>
+WMI: 102（平均）<br>
+PSI: 99（平均）
+                        </div>
+                        <p><strong>特徴：</strong>全体的にバランスが良い。特定の弱みなし。</p>
+                        <p><strong>向いている業務：</strong>幅広い業務に対応可能</p>
+                        <p><strong>配慮：</strong>特定の配慮より、全般的な支援</p>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <h4><i class="fas fa-star"></i> 数値の意味</h4>
+                    <p>指標の数値（標準得点）は、<strong>平均を100</strong>として表されます。</p>
+                    <ul style="padding-left: 20px; margin-top: 10px;">
+                        <li><strong>90〜109:</strong> 平均範囲</li>
+                        <li><strong>110〜119:</strong> 平均の上（高め）</li>
+                        <li><strong>80〜89:</strong> 平均の下（低め）</li>
+                        <li><strong>120以上:</strong> 優れている</li>
+                        <li><strong>79以下:</strong> 支援が必要な範囲</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- セクション5: 支援への活かし方 -->
+            <section id="support">
+                <h2><i class="fas fa-hands-helping"></i> 支援への翻訳</h2>
+                
+                <p>WAIS-4の結果を、<strong>具体的な職場配慮や支援計画</strong>に翻訳する方法を見ていきます。</p>
+
+                <h3>職場での合理的配慮の例</h3>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>指標の特徴</th>
+                            <th>具体的な配慮事項</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>WMI低い</strong></td>
+                            <td>
+                                • 口頭指示は1つずつ、短く<br>
+                                • チェックリスト・手順書の提供<br>
+                                • 複雑な指示は文書化<br>
+                                • メモ取りの時間確保
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>PSI低い</strong></td>
+                            <td>
+                                • 作業量・時間の調整<br>
+                                • 「ゆっくりでも正確に」の価値認識<br>
+                                • 時間プレッシャーの軽減<br>
+                                • 適切な休憩配置
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>VCI高・PRI低</strong></td>
+                            <td>
+                                • 文書マニュアル中心<br>
+                                • 図面は言語化して説明<br>
+                                • 口頭説明を重視
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>VCI低・PRI高</strong></td>
+                            <td>
+                                • 動画・図解マニュアル<br>
+                                • 実演での指導<br>
+                                • 視覚的資料の活用
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>本人へのフィードバックの原則</h3>
+
+                <div class="feature-list">
+                    <h5>✅ すべきこと（DO）</h5>
+                    <ul>
+                        <li><strong>強みから伝える</strong> - ポジティブな側面を最初に</li>
+                        <li><strong>具体的な場面で説明</strong> - 抽象的でなく実例で</li>
+                        <li><strong>「工夫すればできる」視点</strong> - 可能性を示す</li>
+                        <li><strong>数値は参考値として</strong> - 絶対的評価ではないと強調</li>
+                        <li><strong>対処法とセット</strong> - 困難さだけでなく解決策も</li>
+                    </ul>
+                </div>
+
+                <div class="warning-box">
+                    <h4><i class="fas fa-ban"></i> 避けること（DON'T）</h4>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 8px 0;">❌ IQ値を過度に強調する</li>
+                        <li style="padding: 8px 0;">❌ 本人の努力不足と解釈させる</li>
+                        <li style="padding: 8px 0;">❌ 能力を固定的に捉えさせる</li>
+                        <li style="padding: 8px 0;">❌ 他者と比較する表現を使う</li>
+                    </ul>
+                </div>
+
+                <h3>企業へのフィードバック（本人同意前提）</h3>
+
+                <p>企業には<strong>診断名ではなく、具体的な特性と配慮事項</strong>を伝えます。</p>
+
+                <div style="background: #F5F7FA; padding: 25px; border-radius: 10px; margin: 20px 0;">
+                    <p><strong style="color: #E74C3C;">❌ 悪い例：</strong></p>
+                    <p style="border-left: 3px solid #E74C3C; padding-left: 15px; color: #555;">「この方はワーキングメモリーが低いです」</p>
+                    
+                    <p style="margin-top: 20px;"><strong style="color: #27AE60;">✅ 良い例：</strong></p>
+                    <p style="border-left: 3px solid #27AE60; padding-left: 15px; color: #555;">「口頭での複数の指示は覚えにくい傾向があります。一度に一つ、または文書で指示をいただくと確実に理解できます」</p>
+                </div>
+            </section>
+
+            <!-- セクション6: 限界と倫理 -->
+            <section id="limitations">
+                <h2><i class="fas fa-balance-scale"></i> WAIS-4の限界と倫理</h2>
+                
+                <div class="intro-box">
+                    <h3>WAIS-4で「わからない」こと</h3>
+                    <p>WAIS-4は優れたツールですが、<strong>全てを測るわけではありません</strong>。以下は測定していない能力です：</p>
+                </div>
+
+                <div class="pattern-cards">
+                    <div class="pattern-card type1">
+                        <h4>❌ パーソナリティ（性格）</h4>
+                        <p>外向的か内向的か、几帳面かおおらかかなど、性格特性は測定しません</p>
+                    </div>
+                    <div class="pattern-card type2">
+                        <h4>❌ 社会性・対人スキル</h4>
+                        <p>コミュニケーション能力、共感性、協調性などは測定しません</p>
+                    </div>
+                    <div class="pattern-card type3">
+                        <h4>❌ 創造性・意欲</h4>
+                        <p>アイデア創出力、モチベーション、やる気は測定しません</p>
+                    </div>
+                    <div class="pattern-card type4">
+                        <h4>❌ 実際の職務遂行能力</h4>
+                        <p>実際の仕事のパフォーマンスは、認知機能だけでは決まりません</p>
+                    </div>
+                </div>
+
+                <h3>文化的・環境的要因の考慮</h3>
+                <p>WAIS-4の結果は以下の要因に影響されます：</p>
+                <ul style="padding-left: 20px; margin: 15px 0;">
+                    <li><strong>教育歴：</strong>特にVCI（言語理解）は学習経験の影響大</li>
+                    <li><strong>文化的背景：</strong>知識問題は文化により異なる</li>
+                    <li><strong>検査時の状態：</strong>疲労、不安、服薬の影響</li>
+                    <li><strong>練習効果：</strong>再検査では点数が上がりやすい</li>
+                </ul>
+
+                <h3>倫理的配慮</h3>
+
+                <div class="checklist">
+                    <h4><i class="fas fa-shield-alt"></i> 守るべき原則</h4>
+                    <ul>
+                        <li><strong>守秘義務：</strong>結果の取り扱いは厳重に。本人同意なく第三者に開示しない</li>
+                        <li><strong>差別の防止：</strong>検査結果による決めつけを避ける。可能性を狭めない</li>
+                        <li><strong>ラベリング回避：</strong>「発達障害」「知的障害」などのラベルを安易に使わない</li>
+                        <li><strong>受検者の権利：</strong>結果を知る権利、説明を受ける権利、不利益を受けない権利を尊重</li>
+                        <li><strong>専門性の尊重：</strong>WAIS-4は専門的訓練を受けた者のみが実施・解釈できる</li>
+                    </ul>
+                </div>
+
+                <div class="warning-box">
+                    <h4><i class="fas fa-exclamation-circle"></i> 重要な注意</h4>
+                    <p><strong>WAIS-4は診断ツールではありません。</strong>発達障害や知的障害の診断は、医師が総合的な情報（生育歴、行動観察、他の検査など）を元に行います。WAIS-4はその判断材料の一つに過ぎません。</p>
+                </div>
+            </section>
+
+            <!-- セクション7: まとめ -->
+            <section id="summary">
+                <h2><i class="fas fa-flag-checkered"></i> まとめ：WAIS-4を支援に活かすために</h2>
+                
+                <div class="key-point">
+                    <h4><i class="fas fa-key"></i> 10の重要原則</h4>
+                    <ol style="padding-left: 20px; margin-top: 15px; line-height: 2;">
+                        <li><strong>数値は手がかり</strong> - 絶対的な評価ではない</li>
+                        <li><strong>プロフィール全体を見る</strong> - 一つの指標だけで判断しない</li>
+                        <li><strong>質的情報も重視</strong> - 数字の背景にある行動を観察</li>
+                        <li><strong>文脈を考慮</strong> - 生育歴、環境、状態を踏まえる</li>
+                        <li><strong>強みを活かす</strong> - 弱点補強より、強みの活用</li>
+                        <li><strong>本人中心</strong> - 本人の困り感と目標を起点に</li>
+                        <li><strong>可変性を忘れない</strong> - 支援で変わる部分がある</li>
+                        <li><strong>具体的に</strong> - 抽象的表現より具体的場面で説明</li>
+                        <li><strong>倫理を守る</strong> - 守秘、差別防止、権利尊重</li>
+                        <li><strong>限界を知る</strong> - WAIS-4で分かることと分からないことを区別</li>
+                    </ol>
+                </div>
+
+                <h3>実践のためのチェックリスト</h3>
+
+                <div class="checklist">
+                    <h4><i class="fas fa-check-double"></i> 解釈の際</h4>
+                    <ul>
+                        <li>4つの指標のバランスを確認した</li>
+                        <li>下位検査のばらつき（scatter）を分析した</li>
+                        <li>質的な観察記録を参照した</li>
+                        <li>本人の生活・就労場面と照合した</li>
+                        <li>他の情報（面接、行動観察）と統合した</li>
+                    </ul>
+                </div>
+
+                <div class="checklist">
+                    <h4><i class="fas fa-check-double"></i> フィードバックの際</h4>
+                    <ul>
+                        <li>強みから伝えた</li>
+                        <li>具体的な場面で説明した</li>
+                        <li>対処法・工夫を一緒に考えた</li>
+                        <li>質問の時間を設けた</li>
+                        <li>前向きに締めくくった</li>
+                    </ul>
+                </div>
+
+                <div class="intro-box" style="margin-top: 40px;">
+                    <h3>最後に</h3>
+                    <p>WAIS-4は「人を評価する道具」ではなく、<span class="highlight">「人を理解し、適切に支援するための地図」</span>です。</p>
+                    <p>この地図を正しく読み解き、一人ひとりの認知特性に合った支援を提供することで、多くの人が自分の強みを活かして働ける社会を作ることができます。</p>
+                    <p><strong>「できない」を「どう支援すればできるか」に変換する──</strong>それがWAIS-4を活用する支援者の役割です。</strong></p>
+                </div>
+            </section>
+
+            <!-- 情報ソース -->
+            <div class="sources">
+                <h3><i class="fas fa-link"></i> 参考情報・関連リソース</h3>
+                <ul>
+                    <li>
+                        <a href="https://www.nichibun.co.jp/kensa/detail/wais4.html" target="_blank">
+                            <i class="fas fa-external-link-alt"></i>
+                            日本文化科学社 - WAIS-IV 知能検査（公式サイト）
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/koyou/shougaishakoyou/index.html" target="_blank">
+                            <i class="fas fa-external-link-alt"></i>
+                            厚生労働省 - 障害者雇用対策
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.rehab.go.jp/" target="_blank">
+                            <i class="fas fa-external-link-alt"></i>
+                            国立職業リハビリテーションセンター
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.nivr.jeed.go.jp/" target="_blank">
+                            <i class="fas fa-external-link-alt"></i>
+                            障害者職業総合センター - 研究資料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.apa.org/science/programs/testing/intelligence" target="_blank">
+                            <i class="fas fa-external-link-alt"></i>
+                            American Psychological Association - Intelligence Testing（英語）
+                        </a>
+                    </li>
+                </ul>
+                <p style="margin-top: 20px; font-size: 0.9em; color: #7F8C8D;">
+                    <i class="fas fa-info-circle"></i> 
+                    WAIS-4の実施・解釈には専門的訓練が必要です。より詳しい情報が必要な場合は、臨床心理士や公認心理師などの専門家にご相談ください。
+                </p>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 岡村雄一郎</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">このガイドは教育目的で作成されています。実際の臨床場面では専門家の判断が必要です。</p>
+        </footer>
+    </div>
+
+    <script>
+        // アコーディオン機能
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.parentElement;
+                const wasActive = item.classList.contains('active');
+                
+                // 全てのアイテムを閉じる
+                document.querySelectorAll('.accordion-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                
+                // クリックしたアイテムを開く（既に開いていた場合は閉じたまま）
+                if (!wasActive) {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // スムーススクロール
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 初期状態で最初のアコーディオンを開く
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstAccordion = document.querySelector('.accordion-item');
+            if (firstAccordion) {
+                firstAccordion.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
